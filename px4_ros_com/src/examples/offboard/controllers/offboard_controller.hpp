@@ -14,6 +14,9 @@
 #include <chrono>
 #include <iostream>
 
+//Custom Libraries
+#include "vehicle_gps_position_listener.hpp"
+
 using namespace std::chrono;
 using namespace std::chrono_literals;
 using namespace px4_msgs::msg;
@@ -30,6 +33,7 @@ public:
 	}
 	void arm();
 	void disarm();
+	void goto_by_meters(float x, float y, float z, float yaw );
 
 protected:
 	rclcpp::TimerBase::SharedPtr timer_;
@@ -93,6 +97,15 @@ void OffboardController::publish_trajectory_setpoint()
 	TrajectorySetpoint msg{};
 	msg.position = {0.0, 0.0, -5.0};
 	msg.yaw = -3.14; // [-PI:PI]
+	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
+	trajectory_setpoint_publisher_->publish(msg);
+}
+
+void OffboardController::goto_by_meters(float x, float y, float z, float yaw)
+{
+	TrajectorySetpoint msg{};
+	msg.position = {x, y, z};
+	msg.yaw = yaw;
 	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 	trajectory_setpoint_publisher_->publish(msg);
 }
