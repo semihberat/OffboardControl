@@ -24,12 +24,12 @@ using namespace px4_msgs::msg;
 class OffboardController : public rclcpp::Node
 {
 public:
-	OffboardController() : Node("offboard_control")
+	OffboardController(std::string px4_namespace) : Node("offboard_control")
 	{
-		offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>("/fmu/in/offboard_control_mode", 10);
-		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>("/fmu/in/trajectory_setpoint", 10);
-		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>("/fmu/in/vehicle_command", 10);
-		offboard_setpoint_counter_ = 0;	
+		offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>(px4_namespace + "in/offboard_control_mode", 10);
+		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(px4_namespace + "in/trajectory_setpoint", 10);
+		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>(px4_namespace + "in/vehicle_command", 10);
+		offboard_setpoint_counter_ = 0;
 	}
 	void arm();
 	void disarm();
@@ -47,7 +47,7 @@ protected:
 	uint64_t offboard_setpoint_counter_;   //!< counter for the number of setpoints sent
 
 	void publish_offboard_control_mode();
-	void publish_trajectory_setpoint();
+	void publish_trajectory_setpoint(float x, float y, float z, float yaw_rad);
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0, float param2 = 0.0);
 };
 
@@ -92,20 +92,11 @@ void OffboardController::publish_offboard_control_mode()
  *        For this example, it sends a trajectory setpoint to make the
  *        vehicle hover at 5 meters with a yaw angle of 180 degrees.
  */
-void OffboardController::publish_trajectory_setpoint()
-{
-	TrajectorySetpoint msg{};
-	msg.position = {0.0, 0.0, -5.0};
-	msg.yaw = -3.14; // [-PI:PI]
-	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
-	trajectory_setpoint_publisher_->publish(msg);
-}
-
-void OffboardController::goto_by_meters(float x, float y, float z, float yaw)
+void OffboardController::publish_trajectory_setpoint(float x, float y, float z, float yaw_rad)
 {
 	TrajectorySetpoint msg{};
 	msg.position = {x, y, z};
-	msg.yaw = yaw;
+	msg.yaw = yaw_rad; // [-PI:PI]
 	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 	trajectory_setpoint_publisher_->publish(msg);
 }

@@ -1,22 +1,26 @@
 
 #include "controllers/offboard_controller.hpp"
-#include "controllers/vehicle_gps_position_listener.hpp"
-#include <px4_msgs/msg/vehicle_local_position.hpp>
-#include <px4_msgs/msg/sensor_gps.hpp>
+#include <iostream>
+#include <rclcpp/rclcpp.hpp>
+#include <stdint.h>
+#include "services/command_approvement.hpp"
 
 using namespace std::placeholders;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 using namespace px4_msgs::msg;
+
 class OffboardControl : public OffboardController
 {
 public:
 
 	std::shared_ptr<VehicleGpsPositionListener> vehicle_gps_position_listener_;
-	OffboardControl() : OffboardController()
+	std::shared_ptr<CommandApprovement> command_approvement_service_;
+	OffboardControl(std::string px4_namespace) : OffboardController(px4_namespace)
 	{
 		timer_ = this->create_wall_timer(100ms, std::bind(&OffboardControl::publisher_callback, this));
-		vehicle_gps_position_listener_ = std::make_shared<VehicleGpsPositionListener>();
+		vehicle_gps_position_listener_ = std::make_shared<VehicleGpsPositionListener>(px4_namespace);
+		command_approvement_service_ = std::make_shared<CommandApprovement>(px4_namespace);
 	}
 
 	// Here is main function where the publisher and subscriber nodes are created and initialized.
@@ -39,11 +43,11 @@ private:
 		if (vehicle_gps_position_listener_->vehicle_local_position_.z > -4.0f)
 		{
 
-			publish_trajectory_setpoint();
+			publish_trajectory_setpoint(0.0,0.0,-0.5,3.14);
 		}
 		else
 		{
-			goto_by_meters(5.0, 5.0, -5.0, 3.14); // hover at 5 meters
+			publish_trajectory_setpoint(5.0, 5.0, -5.0, 3.14); // hover at 5 meters
 		}
 
 		// stop the counter after reaching 11
@@ -73,8 +77,7 @@ int main(int argc, char *argv[])
 	std::cout << "Starting offboard control node..." << std::endl;
 	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 	rclcpp::init(argc, argv);
-	rclcpp::spin(std::make_shared<OffboardControl>());
-
+	rclcpp::spin(std::make_shared<OffboardControl>("/fmu/"));
 	rclcpp::shutdown();
 	return 0;
 }

@@ -18,15 +18,15 @@ using namespace px4_msgs::msg;
 class VehicleGpsPositionListener : public rclcpp::Node
 {
 public:
-	VehicleGpsPositionListener() : Node("vehicle_global_position_listener")
+	VehicleGpsPositionListener(std::string px4_namespace) : Node("vehicle_global_position_listener")
 	{
 		rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
 		auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 
-		subscription_ = this->create_subscription<SensorGps>("/fmu/out/vehicle_gps_position", qos,
+		subscription_ = this->create_subscription<SensorGps>(px4_namespace + "out/vehicle_gps_position", qos,
 															 std::bind(&VehicleGpsPositionListener::gps_callback, this, _1));
 
-		local_position_subscription_ = this->create_subscription<VehicleLocalPosition>("/fmu/out/vehicle_local_position", qos,
+		local_position_subscription_ = this->create_subscription<VehicleLocalPosition>(px4_namespace + "out/vehicle_local_position", qos,
 																					   std::bind(&VehicleGpsPositionListener::local_position_callback, this, _1));
 	}
 	VehicleLocalPosition vehicle_local_position_;

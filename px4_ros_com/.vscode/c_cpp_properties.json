@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/semih/ros2_ws/install/interfaces/include/**",
+        "/home/semih/ws_offboard_control/install/px4_ros_com/include/**",
+        "/home/semih/ws_offboard_control/install/px4_ros2_cpp/include/**",
+        "/home/semih/ws_offboard_control/install/px4_msgs/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/semih/ws_offboard_control/src/px4_ros_com/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
