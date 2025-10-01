@@ -8,27 +8,39 @@
 #include <px4_msgs/msg/trajectory_setpoint.hpp>
 #include <px4_msgs/msg/vehicle_command.hpp>
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
+
+#include <px4_msgs/msg/sensor_gps.hpp>
+#include <px4_msgs/msg/vehicle_local_position.hpp>
+#include <px4_msgs/msg/sensor_gps.hpp>
+
 #include <rclcpp/rclcpp.hpp>
 #include <stdint.h>
 
 #include <chrono>
 #include <iostream>
 
-//Custom Libraries
-#include "vehicle_gps_position_listener.hpp"
+
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
 using namespace px4_msgs::msg;
+using namespace std::placeholders;
 
 class OffboardController : public rclcpp::Node
 {
 public:
-	OffboardController(std::string px4_namespace) : Node("offboard_control")
+	OffboardController() : Node("offboard_control")
 	{
-		offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>(px4_namespace + "in/offboard_control_mode", 10);
-		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(px4_namespace + "in/trajectory_setpoint", 10);
-		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>(px4_namespace + "in/vehicle_command", 10);
+		this->declare_parameter("sys_id", 1);
+		sys_id = this->get_parameter("sys_id").as_int();
+
+		std::string ocmptpc = "/px4_" + std::to_string(sys_id) + "/fmu/in/offboard_control_mode";
+		std::string tsptpc = "/px4_" + std::to_string(sys_id) + "/fmu/in/trajectory_setpoint";
+		std::string vctpc = "/px4_" + std::to_string(sys_id) + "/fmu/in/vehicle_command";
+
+		offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>(ocmptpc, 10);
+		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(tsptpc, 10);
+		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>(vctpc, 10);
 		offboard_setpoint_counter_ = 0;
 	}
 	void arm();
@@ -43,7 +55,7 @@ protected:
 	rclcpp::Publisher<VehicleCommand>::SharedPtr vehicle_command_publisher_;
 
 	std::atomic<uint64_t> timestamp_;   //!< common synced timestamped
-
+	uint8_t sys_id;
 	uint64_t offboard_setpoint_counter_;   //!< counter for the number of setpoints sent
 
 	void publish_offboard_control_mode();
@@ -113,7 +125,7 @@ void OffboardController::publish_vehicle_command(uint16_t command, float param1,
 	msg.param1 = param1;
 	msg.param2 = param2;
 	msg.command = command;
-	msg.target_system = 1;
+	msg.target_system = sys_id;
 	msg.target_component = 1;
 	msg.source_system = 1;
 	msg.source_component = 1;

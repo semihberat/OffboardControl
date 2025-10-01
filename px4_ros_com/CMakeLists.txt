@@ -41,25 +41,12 @@ target_include_directories(frame_transforms PUBLIC
 )
 
 
-# examples/listeners/sensor_combined_listener
-add_executable(sensor_combined_listener src/examples/listeners/sensor_combined_listener.cpp)
-ament_target_dependencies(sensor_combined_listener rclcpp px4_msgs)
-install(TARGETS sensor_combined_listener DESTINATION lib/${PROJECT_NAME})
 
-# examples/listeners/vehicle_gps_position_listener
-add_executable(vehicle_gps_position_listener src/examples/listeners/vehicle_gps_position_listener.cpp)
-ament_target_dependencies(vehicle_gps_position_listener rclcpp px4_msgs)
-install(TARGETS vehicle_gps_position_listener DESTINATION lib/${PROJECT_NAME})
-
-# examples/advertisers/debug_vect_advertiser
-add_executable(debug_vect_advertiser src/examples/advertisers/debug_vect_advertiser.cpp)
-ament_target_dependencies(debug_vect_advertiser rclcpp px4_msgs)
-install(TARGETS debug_vect_advertiser DESTINATION lib/${PROJECT_NAME})
 
 # examples/offboard/offboard_control
-add_executable(offboard_control src/examples/offboard/offboard_control.cpp)
-ament_target_dependencies(offboard_control rclcpp px4_msgs)
-install(TARGETS offboard_control DESTINATION lib/${PROJECT_NAME})
+add_executable(main_class src/offboard/main_class.cpp)
+ament_target_dependencies(main_class rclcpp px4_msgs)
+install(TARGETS main_class DESTINATION lib/${PROJECT_NAME})
 
 
 ############
@@ -114,7 +101,7 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Install Python executables
 install(PROGRAMS
-  src/examples/offboard_py/offboard_control.py
+
   DESTINATION lib/${PROJECT_NAME}
 )
 
