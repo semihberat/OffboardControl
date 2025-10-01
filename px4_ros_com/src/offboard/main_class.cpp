@@ -33,7 +33,7 @@ public:
 		local_position_subscription_ = this->create_subscription<VehicleLocalPosition>(lpstpc, qos,
 																					   std::bind(&OffboardControl::local_position_callback, this, _1));
 		// Timer for publishing setpoints
-		timer_ = this->create_wall_timer(25ms, std::bind(&OffboardControl::publisher_callback, this));																		
+		timer_ = this->create_wall_timer(100ms, std::bind(&OffboardControl::publisher_callback, this));																		
 	}
 
 	VehicleLocalPosition vehicle_local_position_;
@@ -63,6 +63,7 @@ private:
 		}
 		else
 		{
+			//Just log any word to debug
 			publish_trajectory_setpoint(5.0, 5.0, -5.0, 3.14); // hover at 5 meters
 		}
 

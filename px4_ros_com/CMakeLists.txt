@@ -72,7 +72,7 @@ install(TARGETS frame_transforms
 	INCLUDES DESTINATION include
 )
 
-
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # Install tests
 install(DIRECTORY test DESTINATION share/${PROJECT_NAME}/)
 
