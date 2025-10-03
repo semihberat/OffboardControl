@@ -73,6 +73,7 @@ install(TARGETS frame_transforms
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY config DESTINATION share/${PROJECT_NAME}/)
 # Install tests
 install(DIRECTORY test DESTINATION share/${PROJECT_NAME}/)
 

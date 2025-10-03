@@ -1,8 +1,36 @@
-# PX4 ROS2 Offboard Control Package - Last Commit Summary
-## Date: $(date)
+# PX4 ROS2 Offboard Control - Commit Summary
+## Date: October 4, 2025
 ## Author: Semih
 
-## 🚀 Major Improvements and Refactoring
+## 🚀 Today's Updates
+
+### Shell Scripts Development
+- **`start_multi_drones.sh`**: Multi-drone PX4 SITL launcher with gnome-terminal windows
+  - Fixed snap conflicts with native gnome-terminal usage
+  - 5-second delays between drone startups
+  - Individual terminals for each drone (System ID 1, 2, 3) + MicroXRCE Agent
+- **`start_complete_system.sh`**: Complete automation script
+  - Launches PX4 instances then ROS2 nodes with 20-second delay
+
+### Multi-Robot Launch Configuration  
+- **`multi_robot_start.py`**: Python launch file improvements
+  - Loop-based drone instantiation with sys_id parameters
+  - Config file integration for centralized parameter management
+- **`multi_robot_params.yaml`**: Parameter configuration file
+- **CMakeLists.txt**: Added config directory installation
+
+### README.md Overview Update
+- Added demo video reference: `Screencast from 10-01-2025 09_50_40 PM.mp4`
+- Streamlined documentation for better usability
+- Focused on practical usage and swarm capabilities
+
+## 🎯 Key Achievement
+Successfully created automated multi-drone launch system with demonstrated 3-drone swarm coordination.
+
+## 🔧 Usage
+```bash
+./start_complete_system.sh  # One-command full system launch
+```
 
 ### 📁 Code Organization & Architecture
 - **Modular Design**: Restructured offboard control codebase with clear separation of concerns
