@@ -3,7 +3,7 @@
 ## 📋 Overview
 Multi-vehicle offboard control system for PX4 autopilot using ROS2. Supports autonomous flight, swarm operations, and real-time position monitoring.
 
-https://github.com/user-attachments/assets/1dddc4ed-fc76-4c2b-be46-44f565505d7e
+
 
 ## ✨ Features
 - **Multi-Vehicle Support**: Control multiple drones simultaneously
