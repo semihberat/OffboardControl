@@ -45,7 +45,7 @@ public:
 	}
 	void arm();
 	void disarm();
-	void goto_by_meters(float x, float y, float z, float yaw );
+
 
 protected:
 	rclcpp::TimerBase::SharedPtr timer_;

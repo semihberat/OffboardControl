@@ -3,7 +3,14 @@
 #include <iostream>
 #include <rclcpp/rclcpp.hpp>
 #include <stdint.h>
+#include <px4_msgs/msg/sensor_gps.hpp>
+#include <px4_msgs/msg/vehicle_local_position.hpp>
+#include <px4_msgs/msg/sensor_gps.hpp>
 
+
+//isimlendirme yaparken basina / koymak ros2'de namespace kullaniminda daha kati olmasi icin onlem aliyor
+//eger / koymazsaniz node ismi namespace'in basina ekleniyor ve bu bazen istenmeyen durumlara yol acabiliyor
+//ornegin node ismi offboard_control iken namespace /my_ns ise node ismi /my_ns/offboard_control oluyor
 
 using namespace std::placeholders;
 using namespace std::chrono;
