@@ -9,9 +9,11 @@ https://github.com/user-attachments/assets/f64cdb6e-4cb2-478a-b3f2-e52be3298e29
 
 ## ✨ Features
 - **Multi-Vehicle Support**: Control multiple drones simultaneously
-- **Automated Launch**: One-click system startup
+- **Camera Integration**: Real-time camera feeds from all drones via ros_gz_bridge
+- **Automated Launch**: One-click system startup with camera bridges
 - **Real-time Monitoring**: GPS and local position tracking
 - **Swarm Operations**: Coordinated multi-drone missions
+- **Computer Vision Ready**: OpenCV-compatible camera streams
 
 ## 🚀 Quick Start
 
@@ -30,12 +32,28 @@ source install/setup.bash
 
 ### Launch System
 ```bash
-# Complete system startup (PX4 + ROS2)
+# Complete system startup (PX4 + ROS2 + Camera Bridges)
 ./start_complete_system.sh
 
 # Or step-by-step:
 ./start_multi_drones.sh              # Start PX4 instances
-ros2 launch px4_ros_com multi_robot_start.py  # Launch ROS2 nodes
+ros2 launch px4_ros_com multi_robot_start.py  # Launch ROS2 nodes + Camera bridges
+```
+
+## 📸 Camera Features
+
+### View Camera Streams
+```bash
+# Check available camera topics
+ros2 topic list | grep camera
+
+# View specific drone camera
+ros2 run image_view image_view image:=/px4_1/camera/image
+
+# All cameras available at:
+# /px4_1/camera/image
+# /px4_2/camera/image  
+# /px4_3/camera/image
 ```
 
 ## 🎮 Usage
