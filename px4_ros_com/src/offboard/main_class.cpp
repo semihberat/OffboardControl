@@ -43,8 +43,8 @@ public:
 		timer_ = this->create_wall_timer(100ms, std::bind(&OffboardControl::publisher_callback, this));																		
 	}
 
-	std::shared_ptr<VehicleLocalPosition> vehicle_local_position_;
-	std::shared_ptr<SensorGps> vehicle_gps_position_;
+	VehicleLocalPosition vehicle_local_position_;
+	SensorGps vehicle_gps_position_;
 	// Here is main function where the publisher and subscriber nodes are created and initialized.
 private:
 	rclcpp::Subscription<SensorGps>::SharedPtr subscription_;
@@ -84,12 +84,12 @@ private:
 	// Subscriber Callbacks
 	void gps_callback(const SensorGps::SharedPtr msg)
 	{
-		vehicle_gps_position_ = msg;
+		vehicle_gps_position_ = *msg;
 	}
 
 	void local_position_callback(const VehicleLocalPosition::SharedPtr msg)
 	{
-		vehicle_local_position_ = msg;
+		vehicle_local_position_ = *msg;
 	}
 };
 
