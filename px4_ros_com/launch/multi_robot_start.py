@@ -20,12 +20,13 @@ def generate_launch_description():
 
 def load_cameras(number_of_cameras, ld, config = None):
     for idx in range(1, number_of_cameras + 1):
+        
         camera_node = Node(
             package = "ros_gz_bridge",
             executable = "parameter_bridge",
             name = f"camera_bridge_{idx}",
             arguments=[
-                f"/world/default/model/x500_mono_cam_down_{idx}/link/camera_link/sensor/imager/image@sensor_msgs/msg/Image@gz.msgs.Image"
+                f"/world/aruco/model/x500_mono_cam_down_{idx}/link/camera_link/sensor/imager/image@sensor_msgs/msg/Image@gz.msgs.Image"
             ]
         )
 
@@ -34,7 +35,7 @@ def load_cameras(number_of_cameras, ld, config = None):
             executable = "parameter_bridge",
             name = f"camera_info_bridge_{idx}",
             arguments=[
-                f"/world/default/model/x500_mono_cam_down_{idx}/link/camera_link/sensor/imager/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo"
+                f"/world/aruco/model/x500_mono_cam_down_{idx}/link/camera_link/sensor/imager/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo"
             ]
         )
         ld.add_action(camera_node)
