@@ -3,15 +3,20 @@
 #ifndef OFFBOARD_CONTROLLER_HPP
 #define OFFBOARD_CONTROLLER_HPP
 
-
+// PX4_MSGS PUBLICATIONS
 #include <px4_msgs/msg/offboard_control_mode.hpp>
 #include <px4_msgs/msg/trajectory_setpoint.hpp>
 #include <px4_msgs/msg/vehicle_command.hpp>
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
 
+// PX4_MSGS SUBSCRIPTIONS
 #include <px4_msgs/msg/sensor_gps.hpp>
 #include <px4_msgs/msg/vehicle_local_position.hpp>
 #include <px4_msgs/msg/sensor_gps.hpp>
+
+//CUSTOM INTERFACES
+#include <custom_interfaces/msg/neighbors_info.hpp>
+
 
 #include <rclcpp/rclcpp.hpp>
 #include <stdint.h>
@@ -41,6 +46,8 @@ public:
 		offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>(ocmptpc, 10);
 		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(tsptpc, 10);
 		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>(vctpc, 10);
+		neighbors_gps_publisher_ = this->create_publisher<custom_interfaces::msg::NeighborsInfo>("/neighbors_gps", 10);
+
 		offboard_setpoint_counter_ = 0;
 	}
 	void arm();
@@ -53,6 +60,7 @@ protected:
 	rclcpp::Publisher<OffboardControlMode>::SharedPtr offboard_control_mode_publisher_;
 	rclcpp::Publisher<TrajectorySetpoint>::SharedPtr trajectory_setpoint_publisher_;
 	rclcpp::Publisher<VehicleCommand>::SharedPtr vehicle_command_publisher_;
+	rclcpp::Publisher<custom_interfaces::msg::NeighborsInfo>::SharedPtr neighbors_gps_publisher_;
 
 	std::atomic<uint64_t> timestamp_;   //!< common synced timestamped
 	uint8_t sys_id;
@@ -61,7 +69,11 @@ protected:
 	void publish_offboard_control_mode();
 	void publish_trajectory_setpoint(float x, float y, float z, float yaw_rad);
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0, float param2 = 0.0);
+	void publish_gps_to_neighbors(custom_interfaces::msg::NeighborsInfo msg);
 };
+
+
+
 
 /**
  * @brief Send a command to Arm the vehicle
@@ -133,5 +145,6 @@ void OffboardController::publish_vehicle_command(uint16_t command, float param1,
 	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 	vehicle_command_publisher_->publish(msg);
 }
+
 
 #endif // OFFBOARD_CONTROLLER_HPP

@@ -5,19 +5,23 @@ import os
 
 def generate_launch_description():
 
+    number_of_drones = 3
+
     ld = LaunchDescription()
 
     pkg_share = get_package_share_directory('px4_ros_com')
     config = os.path.join(pkg_share, 'config', 'multi_robot_params.yaml')
+    
     # Or you can load parameters for loop
-    ld = load_drones(number_of_drones=3, ld=ld, config=config)
-    ld = load_cameras(number_of_cameras=3, ld=ld, config=config)
+    ld = load_drones(number_of_drones=number_of_drones, ld=ld, config=config)
+    ld = load_cameras(number_of_cameras=number_of_drones, ld=ld, config=config)
 
     return ld
 
 
-# Modules to load multiple cameras and drones
+# MODULES TO LOAD MULTIPLE CAMERAS AND DRONES
 
+# Camera Nodes
 def load_cameras(number_of_cameras, ld, config = None):
     for idx in range(1, number_of_cameras + 1):
         
@@ -42,6 +46,7 @@ def load_cameras(number_of_cameras, ld, config = None):
         ld.add_action(camera_info_node)
     return ld
 
+# Drone Nodes
 def load_drones(number_of_drones, ld, config = None):
     for idx in range(1, number_of_drones + 1):
         drone_node = Node(

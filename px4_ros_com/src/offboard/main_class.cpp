@@ -6,6 +6,7 @@
 #include <px4_msgs/msg/sensor_gps.hpp>
 #include <px4_msgs/msg/vehicle_local_position.hpp>
 #include <px4_msgs/msg/sensor_gps.hpp>
+#include <custom_interfaces/msg/neighbors_info.hpp>
 
 
 //isimlendirme yaparken basina / koymak ros2'de namespace kullaniminda daha kati olmasi icin onlem aliyor
@@ -33,13 +34,16 @@ public:
 
 		std::string gpstpc = "/px4_" + std::to_string(sys_id) + "/fmu/out/vehicle_gps_position";
 		std::string lpstpc = "/px4_" + std::to_string(sys_id) + "/fmu/out/vehicle_local_position_v1";
-
-		subscription_ = this->create_subscription<SensorGps>(gpstpc, qos,
+		
+		//Subscribers
+		vehicle_gps_subscriptions_ = this->create_subscription<SensorGps>(gpstpc, qos,
 															 std::bind(&OffboardControl::gps_callback, this, _1));
 
 		local_position_subscription_ = this->create_subscription<VehicleLocalPosition>(lpstpc, qos,
 																					   std::bind(&OffboardControl::local_position_callback, this, _1));
-		// Timer for publishing setpoints
+		// Publishers
+		neighbors_gps_publisher_ = this->create_publisher<custom_interfaces::msg::NeighborsInfo>("/neighbors_gps", 10);
+
 		timer_ = this->create_wall_timer(100ms, std::bind(&OffboardControl::publisher_callback, this));																		
 	}
 
@@ -47,7 +51,7 @@ public:
 	SensorGps vehicle_gps_position_;
 	// Here is main function where the publisher and subscriber nodes are created and initialized.
 private:
-	rclcpp::Subscription<SensorGps>::SharedPtr subscription_;
+	rclcpp::Subscription<SensorGps>::SharedPtr vehicle_gps_subscriptions_;
 	rclcpp::Subscription<VehicleLocalPosition>::SharedPtr local_position_subscription_;
 	// Publisher Callback 
 	void publisher_callback()
@@ -63,6 +67,7 @@ private:
 
 		// offboard_control_mode needs to be paired with trajectory_setpoint
 		publish_offboard_control_mode();
+		publish_gps_to_neighbors();
 		if (vehicle_local_position_.z > -4.0f)
 		{
 
@@ -90,6 +95,21 @@ private:
 	void local_position_callback(const VehicleLocalPosition::SharedPtr msg)
 	{
 		vehicle_local_position_ = *msg;
+	}
+
+	void publish_gps_to_neighbors(){
+
+		custom_interfaces::msg::NeighborsInfo msg;
+		
+		if(msg.neighbors_gps.size() == sys_id - 1){
+			msg.neighbors_gps.push_back(vehicle_gps_position_);
+			
+		}
+		else{
+			msg.neighbors_gps[sys_id - 1] = vehicle_gps_position_;
+		}
+
+		neighbors_gps_publisher_->publish(msg);
 	}
 };
 

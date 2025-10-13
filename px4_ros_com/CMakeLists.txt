@@ -102,7 +102,7 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Install Python executables
 install(PROGRAMS
-
+  px4_ros_com/object_detection.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

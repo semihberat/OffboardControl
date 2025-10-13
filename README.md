@@ -9,11 +9,14 @@ https://github.com/user-attachments/assets/f64cdb6e-4cb2-478a-b3f2-e52be3298e29
 
 ## ✨ Features
 - **Multi-Vehicle Support**: Control multiple drones simultaneously
-- **Camera Integration**: Real-time camera feeds from all drones via ros_gz_bridge
-- **Automated Launch**: One-click system startup with camera bridges
+- **ArUco World Integration**: Specialized environment for computer vision applications
+- **Advanced Camera System**: Dual camera bridges (image + camera_info) for full sensor_msgs support
+- **Automated Launch**: One-click system startup with complete camera integration
 - **Real-time Monitoring**: GPS and local position tracking
-- **Swarm Operations**: Coordinated multi-drone missions
-- **Computer Vision Ready**: OpenCV-compatible camera streams
+- **Swarm Operations**: Coordinated multi-drone missions in ArUco environment
+- **Computer Vision Ready**: Full OpenCV/ROS2 camera integration with calibration data
+- **Neighbor Communication**: Custom interface for GPS sharing between drones in swarm
+- **Custom Interfaces**: ROS2 message definitions for advanced swarm coordination
 
 ## 🚀 Quick Start
 
@@ -26,34 +29,43 @@ sudo apt install ros-humble-desktop-full ros-humble-px4-msgs
 ```bash
 git clone https://github.com/semihberat/OffboardControl.git
 cd OffboardControl
-colcon build --packages-select px4_ros_com
+colcon build --packages-select px4_ros_com custom_interfaces
 source install/setup.bash
 ```
 
 ### Launch System
 ```bash
-# Complete system startup (PX4 + ROS2 + Camera Bridges)
+# Complete system startup (PX4 ArUco World + ROS2 + Camera Bridges)
 ./start_complete_system.sh
 
 # Or step-by-step:
-./start_multi_drones.sh              # Start PX4 instances
-ros2 launch px4_ros_com multi_robot_start.py  # Launch ROS2 nodes + Camera bridges
+./start_multi_drones.sh              # Start PX4 instances in ArUco world
+ros2 launch px4_ros_com multi_robot_start.py  # Launch ROS2 nodes + Dual camera bridges
 ```
 
-## 📸 Camera Features
+## 📸 Advanced Camera System
 
-### View Camera Streams
+### Dual Camera Streams
 ```bash
-# Check available camera topics
-ros2 topic list | grep camera
+# Check available camera topics (image + camera_info)
+ros2 topic list | grep -E "image|camera_info"
 
-# View specific drone camera
-ros2 run image_view image_view image:=/px4_1/camera/image
+# View camera with calibration data
+ros2 run image_view image_view image:=/world/aruco/model/x500_mono_cam_down_1/link/camera_link/sensor/imager/image
 
-# All cameras available at:
-# /px4_1/camera/image
-# /px4_2/camera/image  
-# /px4_3/camera/image
+# Camera info for OpenCV calibration
+ros2 topic echo /world/aruco/model/x500_mono_cam_down_1/link/camera_link/sensor/imager/camera_info
+
+# All camera streams available:
+# - Image streams for each drone
+# - Camera_info streams for calibration data
+# - ArUco marker detection ready
+```
+
+### Computer Vision Integration
+```bash
+# Example: ArUco marker detection
+ros2 run cv_bridge cv_bridge_test image:=/world/aruco/model/x500_mono_cam_down_1/link/camera_link/sensor/imager/image
 ```
 
 ## 🎮 Usage
@@ -88,6 +100,15 @@ ros2 topic echo /px4_1/fmu/out/vehicle_status_v1 --once
 ros2 topic hz /px4_1/fmu/in/offboard_control_mode
 ```
 
+### Neighbor Communication Issues
+```bash
+# Check neighbor GPS sharing
+ros2 topic echo /neighbors_gps
+
+# Verify custom interface
+ros2 interface show custom_interfaces/msg/NeighborsInfo
+```
+
 ### QoS Issues
 All publishers use `sensor_data` QoS profile for PX4 compatibility.
 
@@ -101,9 +122,18 @@ public:
     void disarm();
     void publish_offboard_control_mode();
     void publish_trajectory_setpoint(float x, float y, float z, float yaw);
+    void publish_gps_to_neighbors();  // Share GPS data with swarm
     
     VehicleLocalPosition vehicle_local_position_;  // Current position
+    rclcpp::Publisher<custom_interfaces::msg::NeighborsInfo>::SharedPtr neighbors_gps_publisher_;
 };
+```
+
+### Custom Interfaces
+```bash
+# NeighborsInfo.msg - Swarm communication interface
+uint8[] neighbors_ids          # Array of neighbor drone IDs
+px4_msgs/SensorGps[] neighbors_gps  # GPS data from each neighbor
 ```
 
 ## 🎯 Mission Logic
