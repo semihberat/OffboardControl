@@ -20,11 +20,6 @@ https://github.com/user-attachments/assets/f64cdb6e-4cb2-478a-b3f2-e52be3298e29
 
 ## 🚀 Quick Start
 
-### Prerequisites
-```bash
-sudo apt install ros-humble-desktop-full ros-humble-px4-msgs
-```
-
 ### Build
 ```bash
 git clone https://github.com/semihberat/OffboardControl.git
@@ -35,10 +30,6 @@ source install/setup.bash
 
 ### Launch System
 ```bash
-# Complete system startup (PX4 ArUco World + ROS2 + Camera Bridges)
-./start_complete_system.sh
-
-# Or step-by-step:
 ./start_multi_drones.sh              # Start PX4 instances in ArUco world
 ros2 launch px4_ros_com multi_robot_start.py  # Launch ROS2 nodes + Dual camera bridges
 ```
@@ -129,11 +120,6 @@ public:
 };
 ```
 
-### Custom Interfaces
-```bash
-# NeighborsInfo.msg - Swarm communication interface
-uint8[] neighbors_ids          # Array of neighbor drone IDs
-px4_msgs/SensorGps[] neighbors_gps  # GPS data from each neighbor
 ```
 
 ## 🎯 Mission Logic

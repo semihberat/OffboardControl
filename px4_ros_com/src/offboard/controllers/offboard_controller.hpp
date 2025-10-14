@@ -37,7 +37,9 @@ public:
 	OffboardController() : Node("offboard_control")
 	{
 		this->declare_parameter("sys_id", 1);
+		this->declare_parameter("number_of_drones", 1);
 		sys_id = this->get_parameter("sys_id").as_int();
+		number_of_drones = this->get_parameter("number_of_drones").as_int();
 
 		std::string ocmptpc = "/px4_" + std::to_string(sys_id) + "/fmu/in/offboard_control_mode";
 		std::string tsptpc = "/px4_" + std::to_string(sys_id) + "/fmu/in/trajectory_setpoint";
@@ -46,7 +48,7 @@ public:
 		offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>(ocmptpc, 10);
 		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(tsptpc, 10);
 		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>(vctpc, 10);
-		neighbors_gps_publisher_ = this->create_publisher<custom_interfaces::msg::NeighborsInfo>("/neighbors_gps", 10);
+
 
 		offboard_setpoint_counter_ = 0;
 	}
@@ -65,15 +67,13 @@ protected:
 	std::atomic<uint64_t> timestamp_;   //!< common synced timestamped
 	uint8_t sys_id;
 	uint64_t offboard_setpoint_counter_;   //!< counter for the number of setpoints sent
+	uint8_t number_of_drones;
 
 	void publish_offboard_control_mode();
 	void publish_trajectory_setpoint(float x, float y, float z, float yaw_rad);
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0, float param2 = 0.0);
 	void publish_gps_to_neighbors(custom_interfaces::msg::NeighborsInfo msg);
 };
-
-
-
 
 /**
  * @brief Send a command to Arm the vehicle

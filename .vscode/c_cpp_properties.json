@@ -9,10 +9,10 @@
         "/home/semih/ws_offboard_control/install/px4_ros_com/include/**",
         "/home/semih/ws_offboard_control/install/px4_ros2_cpp/include/**",
         "/home/semih/ws_offboard_control/install/px4_msgs/include/**",
-        "/home/semih/ws_offboard_control/install/custom_interfaces/include/**",
         "/opt/ros/humble/include/**",
         "/home/semih/ws_offboard_control/src/px4_ros_com/include/**",
-        "/usr/include/**"
+        "/usr/include/**",
+        "/home/semih/ws_offboard_control/install/custom_interfaces/include/**"
       ],
       "name": "ROS",
       "intelliSenseMode": "gcc-x64",

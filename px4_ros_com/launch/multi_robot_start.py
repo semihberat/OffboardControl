@@ -53,7 +53,10 @@ def load_drones(number_of_drones, ld, config = None):
             package='px4_ros_com',
             executable='main_class',
             name=f'drone{idx}',
-            parameters=[config, {'sys_id': idx}]
+            parameters=[config, 
+                        {'sys_id': idx},
+                        {'number_of_drones': number_of_drones}
+                        ]
         )
         ld.add_action(drone_node)
 

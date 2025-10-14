@@ -25,6 +25,7 @@ find_package(px4_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(custom_interfaces REQUIRED)
 
 #################
 # Setup targets #
@@ -45,7 +46,7 @@ target_include_directories(frame_transforms PUBLIC
 
 # examples/offboard/offboard_control
 add_executable(main_class src/offboard/main_class.cpp)
-ament_target_dependencies(main_class rclcpp px4_msgs)
+ament_target_dependencies(main_class rclcpp px4_msgs custom_interfaces)
 install(TARGETS main_class DESTINATION lib/${PROJECT_NAME})
 
 
