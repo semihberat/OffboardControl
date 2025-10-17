@@ -29,6 +29,7 @@ public:
 
 		std::string gpstpc = "/px4_" + std::to_string(sys_id) + "/fmu/out/vehicle_global_position";
 		std::string lpstpc = "/px4_" + std::to_string(sys_id) + "/fmu/out/vehicle_local_position_v1";
+		std::string ntpc = "/px4_" + std::to_string(sys_id) + "/neighbors_info";
 
 		// Subscribers
 		vehicle_gps_subscriptions_ = this->create_subscription<VehicleGlobalPosition>(gpstpc, qos,
@@ -37,18 +38,12 @@ public:
 		local_position_subscription_ = this->create_subscription<VehicleLocalPosition>(lpstpc, qos,
 																					   std::bind(&OffboardControl::local_position_callback, this, _1));
 		// Listen to neighbor GPS topics
-		for (uint8_t i = 1; i <= number_of_drones; i++)
-		{
-			if (i != sys_id)
-			{
-				std::string member_topic = "/px4_" + std::to_string(i) + "/fmu/out/vehicle_global_position";
-				sub = this->create_subscription<VehicleGlobalPosition>(member_topic, qos,
-																			std::bind(&OffboardControl::neighbor_gps_callback, this, _1));
-			}
-		}
+		listen_neighbors(qos); // It's important because we are going to use this function swarm communicating development
 		
 		// Publishers
-		neighbors_gps_publisher_ = this->create_publisher<custom_interfaces::msg::NeighborsInfo>("/neighbors_info", 10);
+		//It comes from controllers/offboard_controller.hpp
+		//I am keeping publisher into controllers/offboard_controller.hpp
+		neighbors_gps_publisher_ = this->create_publisher<custom_interfaces::msg::NeighborsInfo>(ntpc, 10);
 
 		timer_ = this->create_wall_timer(100ms, std::bind(&OffboardControl::publisher_callback, this));
 	}
@@ -60,6 +55,13 @@ private:
 	rclcpp::Subscription<VehicleGlobalPosition>::SharedPtr vehicle_gps_subscriptions_;
 	rclcpp::Subscription<VehicleLocalPosition>::SharedPtr local_position_subscription_;
 	rclcpp::Subscription<VehicleGlobalPosition>::SharedPtr sub;
+
+	std::vector<VehicleGlobalPosition> neighbor_gps_queue_;
+	std::vector<uint8_t> neighbor_id_queue_;
+
+
+	float min_altitude = -4.0f;
+
 	// Publisher Callback
 	void publisher_callback()
 	{
@@ -74,16 +76,16 @@ private:
 
 		// offboard_control_mode needs to be paired with trajectory_setpoint
 		publish_offboard_control_mode();
-
-		if (vehicle_local_position_.z > -4.0f)
+		// When altitude boundary is crossed
+		if (vehicle_local_position_.z > min_altitude)
 		{
-
-			publish_trajectory_setpoint(0.0, 0.0, -5.0, 3.14);
+			publish_trajectory_setpoint(0.0, 0.0, -5.0, 3.14);	
 		}
 		else
 		{
-			// Just log any word to debug
+			publish_gps_to_neighbors();
 			publish_trajectory_setpoint(5.0, 5.0, -5.0, 3.14); // hover at 5 meters
+			
 		}
 
 		// stop the counter after reaching 11
@@ -104,11 +106,37 @@ private:
 		vehicle_local_position_ = *msg;
 	}
 
+	// Listen Neighbors 
+	void listen_neighbors(rclcpp::QoS qos){
+		for (uint8_t i = 1; i <= number_of_drones; i++)
+		{
+			if (i != sys_id)
+			{
+				std::string member_topic = "/px4_" + std::to_string(i) + "/fmu/out/vehicle_global_position";
+				neighbor_id_queue_.push_back(i);
+				sub = this->create_subscription<VehicleGlobalPosition>(member_topic, qos,
+																			std::bind(&OffboardControl::neighbor_gps_callback, this, _1));																						
+			}
+
+		}
+	}
+
 	void neighbor_gps_callback(const VehicleGlobalPosition::SharedPtr msg)
 	{
-		RCLCPP_INFO(this->get_logger(), "Received neighbor GPS: Lat = %lf, Lon = %lf, Alt = %lf",
-					msg->lat, msg->lon, msg->alt);
-		// Publish the GPS data to neighbors
+		if(neighbor_gps_queue_.size() >= static_cast<size_t>(number_of_drones - 1)){
+			neighbor_gps_queue_.erase(neighbor_gps_queue_.begin());
+
+		}
+		neighbor_gps_queue_.push_back(*msg);
+	
+	}
+
+	void publish_gps_to_neighbors(){
+		custom_interfaces::msg::NeighborsInfo msg{};
+		msg.neighbor_positions = neighbor_gps_queue_;
+		msg.neighbor_ids = neighbor_id_queue_;
+		
+		neighbors_gps_publisher_->publish(msg);
 	}
 };
 

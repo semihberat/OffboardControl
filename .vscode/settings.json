@@ -104,6 +104,7 @@
         "syncstream": "cpp",
         "valarray": "cpp",
         "hash_map": "cpp",
-        "hash_set": "cpp"
+        "hash_set": "cpp",
+        "netfwd": "cpp"
     }
 }

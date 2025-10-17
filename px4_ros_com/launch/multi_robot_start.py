@@ -5,7 +5,7 @@ import os
 
 def generate_launch_description():
 
-    number_of_drones = 3
+    number_of_drones = 5
 
     ld = LaunchDescription()
 

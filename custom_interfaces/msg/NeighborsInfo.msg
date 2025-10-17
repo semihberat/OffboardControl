@@ -1,2 +1,2 @@
-uint8[] neighbors_ids
-px4_msgs/VehicleGlobalPosition[] neighbors_position
+uint8[] neighbor_ids
+px4_msgs/VehicleGlobalPosition[] neighbor_positions
