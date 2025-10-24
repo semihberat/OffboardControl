@@ -157,3 +157,33 @@ The swarm communication foundation is **solid and production-ready**. The system
 **🎉 Swarm Communication: COMPLETE ✅**
 **🚀 Next Target: Formation Flight Intelligence 🧠**
 
+ 
+---
+
+📅 Last Development Session - 24 October 2025
+
+## 🔁 Filesystem Reorganization & New Modules
+Today the `px4_ros_com` package source tree was reorganized and new module directories were added under `src/` to better separate concerns and host upcoming features.
+
+### ✅ Changes
+- Added directories under `src/px4_ros_com/src/`:
+	- `controller/`         — core controllers and UAV entry point (e.g., `uav_controller.cpp`)
+	- `formulations/`       — math/algorithm helper headers (e.g., `CalculateCentralPoint.hpp`)
+	- `lib/`                — shared libraries (e.g., `frame_transforms`)
+	- `object_detection/`   — vision & detection modules/scripts
+	- `path_planner/`       — path planning algorithms and planners
+
+- Updated `CMakeLists.txt` to build `main_class` from `src/controller/uav_controller.cpp` and to expose the new library targets.
+- Added an initial formulation header `CalculateCentralPoint.hpp` (uses Eigen).
+
+### ⚙️ Impact / Notes
+- README (`/src/README.md`) updated to reflect new structure and to point to the actual build target location.
+- `path_plan_controller.hpp` remains the next major development target (moved into controller/path_planner area depending on design).
+
+### Next steps
+1. Implement path planning logic in `path_planner/` and wire into the controller.
+2. Add unit tests for `formulations/` (geometry/math correctness).
+3. Clean up any outdated launch/config references and ensure CI uses the updated build layout.
+
+---
+

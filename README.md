@@ -33,21 +33,22 @@ source install/setup.bash
 ros2 launch px4_ros_com multi_robot_start.py # Launch ROS2 nodes + Camera bridges
 ```
 
-## � Project Structure
+## 📁 Project Structure (project reorganized)
 
 ```
 px4_ros_com/
-├── src/offboard/
-│   ├── controllers/
-│   │   ├── offboard_controller.hpp    # Base controller class
-│   │   └── path_plan_controller.hpp   # Path planning (under development)
-│   └── main_class.cpp                 # Main application
-├── launch/
-│   └── multi_robot_start.py          # Multi-drone launch file
-├── config/
-│   └── multi_robot_params.yaml       # Configuration parameters
-└── start_multi_drones.sh             # PX4 simulation starter
+├── src/
+│   ├── controller/           # core controllers (uav_controller, offboard logic)
+│   ├── formulations/         # math & algorithm helpers (e.g., CalculateCentralPoint)
+│   ├── lib/                  # shared libraries (frame_transforms, helpers)
+│   ├── object_detection/     # vision modules and scripts
+│   └── path_planner/         # path planning modules and planners
+├── launch/                   # launch files (multi_robot_start.py)
+├── config/                   # configuration parameters (multi_robot_params.yaml)
+└── start_multi_drones.sh     # PX4 SITL startup script
 ```
+
+Note: the package `main_class` executable is built from `src/controller/uav_controller.cpp` (see `CMakeLists.txt`).
 
 ## 📊 ROS2 Topic Architecture
 

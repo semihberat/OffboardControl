@@ -47,12 +47,10 @@ public:
 		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(tsptpc, 10);
 		vehicle_command_publisher_ = this->create_publisher<VehicleCommand>(vctpc, 10);
 
-
 		offboard_setpoint_counter_ = 0;
 	}
 	void arm();
 	void disarm();
-
 
 protected:
 	rclcpp::TimerBase::SharedPtr timer_;

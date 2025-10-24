@@ -45,7 +45,7 @@ target_include_directories(frame_transforms PUBLIC
 
 
 # examples/offboard/offboard_control
-add_executable(main_class src/offboard/main_class.cpp)
+add_executable(main_class src/controller/uav_controller.cpp)
 ament_target_dependencies(main_class rclcpp px4_msgs custom_interfaces)
 install(TARGETS main_class DESTINATION lib/${PROJECT_NAME})
 
