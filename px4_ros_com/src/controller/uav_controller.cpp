@@ -58,10 +58,12 @@ public:
 private:
 	rclcpp::Subscription<VehicleGlobalPosition>::SharedPtr vehicle_gps_subscriptions_;
 	rclcpp::Subscription<VehicleLocalPosition>::SharedPtr local_position_subscription_;
-	rclcpp::Subscription<VehicleGlobalPosition>::SharedPtr sub;
+
 
 	std::vector<VehicleGlobalPosition> neighbor_gps_queue_;
 	std::vector<uint8_t> neighbor_id_queue_;
+	std::vector<rclcpp::Subscription<VehicleGlobalPosition>::SharedPtr> neighbor_subscriptions_;
+	
 	float min_altitude = -4.0f;
 
 	// === Main Timer Callback ===
@@ -108,10 +110,6 @@ private:
 
 	// === PUBLISH FUNCTIONS ===
 	void publish_gps_to_neighbors();
-
-	void calculate_target_point(std::vector<VehicleGlobalPosition> neighbor_gps_queue_){
-	
-	}
 };
 
 void UAVController::gps_callback(const VehicleGlobalPosition::SharedPtr msg){
@@ -129,8 +127,10 @@ void UAVController::listen_neighbors(rclcpp::QoS qos){
 			{
 				std::string member_topic = "/px4_" + std::to_string(i) + "/fmu/out/vehicle_global_position";
 				neighbor_id_queue_.push_back(i);
-				sub = this->create_subscription<VehicleGlobalPosition>(member_topic, qos,
-																			std::bind(&UAVController::neighbor_gps_callback, this, _1));																						
+				auto sub = this->create_subscription<VehicleGlobalPosition>(member_topic, qos,
+																			std::bind(&UAVController::neighbor_gps_callback, this, _1));
+
+				neighbor_subscriptions_.push_back(sub);
 			}
 		}
 	}

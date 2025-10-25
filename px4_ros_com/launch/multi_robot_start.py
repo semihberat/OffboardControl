@@ -15,14 +15,28 @@ def generate_launch_description():
     # Or you can load parameters for loop
     ld = load_drones(number_of_drones=number_of_drones, ld=ld, config=config)
     ld = load_cameras(number_of_cameras=number_of_drones, ld=ld, config=config)
-
+    ld = load_path_planners(number_of_drones=number_of_drones, ld=ld, config=config)
     return ld
 
 
 # MODULES TO LOAD MULTIPLE CAMERAS AND DRONES
 
+# Path Planning Calculators
+def load_path_planners(number_of_drones: int, ld: LaunchDescription, config = None):
+    for idx in range(1, number_of_drones + 1):
+        path_planner_node = Node(
+            package="px4_ros_com",
+            executable="swarm_member_path_planner",
+            name=f'path_planner_{idx}',
+            parameters=[
+                {"sys_id": idx}
+            ]
+        )
+        ld.add_action(path_planner_node)
+    return ld
+
 # Camera Nodes
-def load_cameras(number_of_cameras, ld, config = None):
+def load_cameras(number_of_cameras: int, ld: LaunchDescription, config = None):
     for idx in range(1, number_of_cameras + 1):
         
         camera_node = Node(
@@ -47,11 +61,11 @@ def load_cameras(number_of_cameras, ld, config = None):
     return ld
 
 # Drone Nodes
-def load_drones(number_of_drones, ld, config = None):
+def load_drones(number_of_drones: int, ld: LaunchDescription, config = None):
     for idx in range(1, number_of_drones + 1):
         drone_node = Node(
             package='px4_ros_com',
-            executable='main_class',
+            executable='uav_controller',
             name=f'drone{idx}',
             parameters=[config, 
                         {'sys_id': idx},

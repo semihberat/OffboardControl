@@ -39,14 +39,28 @@ ros2 launch px4_ros_com multi_robot_start.py # Launch ROS2 nodes + Camera bridge
 px4_ros_com/
 ├── src/
 │   ├── controller/           # core controllers (uav_controller, offboard logic)
-│   ├── formulations/         # math & algorithm helpers (e.g., CalculateCentralPoint)
+│   ├── formulations/         # math & algorithm helpers (CalculateCentralPoint, geometry utils)
 │   ├── lib/                  # shared libraries (frame_transforms, helpers)
 │   ├── object_detection/     # vision modules and scripts
-│   └── path_planner/         # path planning modules and planners
+│   └── path_planner/         # path planning algorithms and swarm coordination
 ├── launch/                   # launch files (multi_robot_start.py)
 ├── config/                   # configuration parameters (multi_robot_params.yaml)
 └── start_multi_drones.sh     # PX4 SITL startup script
 ```
+
+### 🧮 **Formulations Module**
+The `formulations/` directory contains mathematical algorithms and geometric calculations essential for swarm operations:
+- **CalculateCentralPoint.hpp**: Compute center of gravity and geometric centroids for formation control
+- **Mathematical utilities**: Eigen-based algorithms for spatial calculations and coordinate transformations
+- **Future expansion**: Will include collision avoidance mathematics, formation patterns, and optimization algorithms
+
+### 🛤️ **Path Planner Module** 
+The `path_planner/` directory hosts intelligent navigation and coordination algorithms:
+- **Swarm path planning**: Multi-drone trajectory generation and conflict resolution  
+- **Formation control**: Maintain desired geometric patterns during flight
+- **Collision avoidance**: Real-time path adjustment based on neighbor GPS data
+- **Waypoint management**: Dynamic route planning and mission coordination
+- **Integration ready**: Designed to work with existing neighbor communication system
 
 Note: the package `main_class` executable is built from `src/controller/uav_controller.cpp` (see `CMakeLists.txt`).
 
